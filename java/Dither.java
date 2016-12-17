@@ -7,21 +7,13 @@ import java.awt.image.BufferedImage;
 
 public class Dither {
 	public static void main(String[] args) throws IOException {
-		File file = new File("../images/originals/insta.jpg");
+		File file = new File("../images/originals/vincent.jpg");
 		BufferedImage originalImage = ImageIO.read(file);
-		System.out.println("width: "+originalImage.getWidth());
-		System.out.println("height: "+originalImage.getHeight());
-		//////
-		//Jet_Point jp = new Jet_Point(3,4,5,6,7.654,3.1415926);
-		//jp.set(1,10);
-		//System.out.println(jp);
-		//System.out.println(jp.dimensions());
-		//System.out.println(jp.get(4));
 
-		//System.out.println(findClosestColor(new Jet_Point(-500,130,280)));
+
 		BufferedImage ditheredImage = dither(originalImage);
 		try {
-			ImageIO.write(ditheredImage, "png", new File("../images/dithered/instaDith.png"));
+			ImageIO.write(ditheredImage, "png", new File("../images/dithered/vincentDith.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -29,10 +21,14 @@ public class Dither {
 	}
 
 	public enum DitheringAlgorithm {
-		FLOYD_STEINBERG
+		FLOYD_STEINBERG,ATKINSON,JJN
 	}
 
 	public static BufferedImage dither(BufferedImage originalImage) {
+		System.out.println();
+		System.out.println("Width = "+originalImage.getWidth()+" px");
+		System.out.println("Height = "+originalImage.getHeight()+" px");
+		System.out.println();
 		int width = originalImage.getWidth();
 		int height = originalImage.getHeight();
 
@@ -52,12 +48,7 @@ public class Dither {
 			}
 		}
 
-		//System.out.println("corner "+quantizedColors[0][0]);
-		//System.out.println("corner+458 "+quantizedColors[0][458]);
-		//System.out.println("corner+458 "+quantizedColors[458][0]);
-
-		ArrayList<Jet_Point> distributionDirectionAndPortion = getDitheringAlgorithm(DitheringAlgorithm.FLOYD_STEINBERG);
-		System.out.println("FLOYD_STEINBERG: "+distributionDirectionAndPortion);
+		ArrayList<Jet_Point> distributionDirectionAndPortion = getDitheringAlgorithm(DitheringAlgorithm.JJN);
 
 		for (int y = 0; y<height; y++) {
 			for (int x = 0; x<width; x++) {
@@ -82,7 +73,6 @@ public class Dither {
 						neighborColor.set(0,neighborColor.get(0)+(errorR*locData.get(2)));
 						neighborColor.set(1,neighborColor.get(1)+(errorG*locData.get(2)));
 						neighborColor.set(2,neighborColor.get(2)+(errorB*locData.get(2)));
-						//System.out.println(quantizedColors[x+(int)locData.get(0)][y+(int)locData.get(1)]);
 					} catch (Exception e) {}
 				}
 			}
@@ -108,6 +98,28 @@ public class Dither {
 				distributionDirectionAndPortion.add(new Jet_Point(0,1,5.0/16.0));
 				distributionDirectionAndPortion.add(new Jet_Point(1,1,1.0/16.0));
 				break;
+			case ATKINSON:
+				distributionDirectionAndPortion.add(new Jet_Point(1,0,1.0/8.0));
+				distributionDirectionAndPortion.add(new Jet_Point(2,0,1.0/8.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-1,1,1.0/8.0));
+				distributionDirectionAndPortion.add(new Jet_Point(0,1,1.0/8.0));
+				distributionDirectionAndPortion.add(new Jet_Point(1,1,1.0/8.0));
+				distributionDirectionAndPortion.add(new Jet_Point(0,2,1.0/8.0));
+				break;
+			case JJN:
+				distributionDirectionAndPortion.add(new Jet_Point(1,0,7.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(2,0,5.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-2,1,3.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-1,1,5.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(0,1,7.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(1,1,5.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(2,1,3.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-2,2,1.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-1,2,3.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(0,2,5.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(1,2,3.0/48.0));
+				distributionDirectionAndPortion.add(new Jet_Point(2,2,1.0/48.0));
+				break;
 			default:
 				System.out.println();
 				break;
@@ -119,7 +131,7 @@ public class Dither {
 		double r = jp.get(0);
 		double g = jp.get(1);
 		double b = jp.get(2);
-		//System.out.println(jp);
+
 		int quantizedR = ((int)r<128)?0:255;
 		int quantizedG = ((int)g<128)?0:255;
 		int quantizedB = ((int)b<128)?0:255;
@@ -132,7 +144,7 @@ public class Dither {
 		double r = jp.get(0);
 		double g = jp.get(1);
 		double b = jp.get(2);
-		//System.out.println(jp);
+
 		int quantizedR = ((int)r<32)?0:((int)r<96)?64:((int)r<160)?128:((int)r<224)?192:255;
 		int quantizedG = ((int)g<32)?0:((int)g<96)?64:((int)g<160)?128:((int)g<224)?192:255;
 		int quantizedB = ((int)b<32)?0:((int)b<96)?64:((int)b<160)?128:((int)b<224)?192:255;
