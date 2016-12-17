@@ -7,13 +7,15 @@ import java.awt.image.BufferedImage;
 
 public class Dither {
 	public static void main(String[] args) throws IOException {
-		File file = new File("../images/originals/vincent.jpg");
+		File file = new File("../images/originals/shy.jpg");
 		BufferedImage originalImage = ImageIO.read(file);
 
-
-		BufferedImage ditheredImage = dither(originalImage);
+		Jet_Point jp = new Jet_Point(3,4,5.6,1);
+		Jet_Point jp2 = new Jet_Point(2,3,4.6);
+		System.out.println(jp.distance(jp2));
+		BufferedImage ditheredImage = dither(originalImage,DitheringAlgorithm.FLOYD_STEINBERG);
 		try {
-			ImageIO.write(ditheredImage, "png", new File("../images/dithered/vincentDith.png"));
+			ImageIO.write(ditheredImage, "png", new File("../images/dithered/shyDith.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -21,10 +23,10 @@ public class Dither {
 	}
 
 	public enum DitheringAlgorithm {
-		FLOYD_STEINBERG,ATKINSON,JJN
+		FLOYD_STEINBERG,ATKINSON,JJN,SIERRA
 	}
 
-	public static BufferedImage dither(BufferedImage originalImage) {
+	public static BufferedImage dither(BufferedImage originalImage, DitheringAlgorithm algo) {
 		System.out.println();
 		System.out.println("Width = "+originalImage.getWidth()+" px");
 		System.out.println("Height = "+originalImage.getHeight()+" px");
@@ -48,7 +50,7 @@ public class Dither {
 			}
 		}
 
-		ArrayList<Jet_Point> distributionDirectionAndPortion = getDitheringAlgorithm(DitheringAlgorithm.JJN);
+		ArrayList<Jet_Point> distributionDirectionAndPortion = getDitheringAlgorithm(algo);
 
 		for (int y = 0; y<height; y++) {
 			for (int x = 0; x<width; x++) {
@@ -119,6 +121,18 @@ public class Dither {
 				distributionDirectionAndPortion.add(new Jet_Point(0,2,5.0/48.0));
 				distributionDirectionAndPortion.add(new Jet_Point(1,2,3.0/48.0));
 				distributionDirectionAndPortion.add(new Jet_Point(2,2,1.0/48.0));
+				break;
+			case SIERRA:
+				distributionDirectionAndPortion.add(new Jet_Point(1,0,5.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(2,0,3.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-2,1,2.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-1,1,4.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(0,1,5.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(1,1,4.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(2,1,2.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(-1,2,2.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(0,2,3.0/32.0));
+				distributionDirectionAndPortion.add(new Jet_Point(1,2,2.0/32.0));
 				break;
 			default:
 				System.out.println();
