@@ -11,7 +11,7 @@ public class Dither {
 		BufferedImage originalImage = ImageIO.read(file);
 		System.out.println("width: "+originalImage.getWidth());
 		System.out.println("height: "+originalImage.getHeight());
-		////
+		//////
 		//Jet_Point jp = new Jet_Point(3,4,5,6,7.654,3.1415926);
 		//jp.set(1,10);
 		//System.out.println(jp);
