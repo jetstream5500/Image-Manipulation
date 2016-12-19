@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 public class Dither {
 	public static void main(String[] args) throws IOException {
-		File file = new File("../images/originals/shy.jpg");
+		File file = new File("../images/originals/gotye.png");
 		BufferedImage originalImage = ImageIO.read(file);
 
 		Jet_Point jp = new Jet_Point(3,4,5.6,1);
@@ -15,7 +15,7 @@ public class Dither {
 		System.out.println(jp.distance(jp2));
 		BufferedImage ditheredImage = dither(originalImage,DitheringAlgorithm.FLOYD_STEINBERG);
 		try {
-			ImageIO.write(ditheredImage, "png", new File("../images/dithered/shyDith.png"));
+			ImageIO.write(ditheredImage, "png", new File("../images/dithered/gotyeDith.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -34,15 +34,12 @@ public class Dither {
 		int width = originalImage.getWidth();
 		int height = originalImage.getHeight();
 
-		BufferedImage ditheredImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics graphics = ditheredImage.getGraphics();
-
 		Jet_Point[][] quantizedColors = new Jet_Point[width][height];
 		for (int y = 0; y<height; y++) {
 			for (int x = 0; x<width; x++) {
 
 				Color color = new Color(originalImage.getRGB(x,y),true);
-				int r  = color.getRed();
+				int r = color.getRed();
 				int g = color.getGreen();
 				int b = color.getBlue();
 
@@ -79,6 +76,9 @@ public class Dither {
 				}
 			}
 		}
+
+		BufferedImage ditheredImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics graphics = ditheredImage.getGraphics();
 
 		for (int y = 0; y<height; y++) {
 			for (int x = 0; x<width; x++) {
