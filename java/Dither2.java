@@ -12,7 +12,7 @@ public class Dither2 {
 	}
 
 	public static void main(String[] args) throws IOException {
-		File file = new File("../images/originals/vincent.jpg");
+		File file = new File("../images/originals/shuttle2.jpg");
 		BufferedImage originalImage = ImageIO.read(file);
 
 		int width = originalImage.getWidth();
@@ -24,15 +24,15 @@ public class Dither2 {
 		System.out.println();
 
 		System.out.println(originalImage);
-		BufferedImage ditheredImage = ditherImage(originalImage,DitheringAlgorithm.FLOYD_STEINBERG);
+		BufferedImage ditheredImage = ditherImage(originalImage,DitheringAlgorithm.ATKINSON);
 		BufferedImage invertedImage = invertImage(originalImage);
 		try {
-			ImageIO.write(ditheredImage, "png", new File("../images/dithered/vincentDith.png"));
+			ImageIO.write(ditheredImage, "png", new File("../images/dithered/shuttle2Dith.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try {
-			ImageIO.write(invertedImage, "png", new File("../images/dithered/vincentInv.png"));
+			ImageIO.write(invertedImage, "png", new File("../images/inverted/shuttle2Inv.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -162,10 +162,13 @@ public class Dither2 {
 	}
 
 	public static BufferedImage invertImage(BufferedImage originalImage) {
+		// Creating image color table
 		double[][][] brokenOriginalImage = imageToBrokenImage(originalImage);
 
+		// Inverting image
 		double[][][] brokenInvertedImage = invertBrokenImage(brokenOriginalImage);
 
+		// Makes new image based off image color table
 		BufferedImage invertedImage = brokenImageToImage(brokenInvertedImage);
 
 		return invertedImage;
